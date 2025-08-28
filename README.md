@@ -57,8 +57,7 @@ npm install -D nodemon prisma typescript ts-node @types/express @types/bcrypt
 
 ### 3️⃣ Configurar variáveis de ambiente (`.env`)
 ```env
-DATABASE_URL="postgresql://usuario:senha@localhost:5432/meubanco?schema=public"
-PORT=3000
+DATABASE_URL="postgresql://postgres:administrador@localhost:5432/projetobackend"
 ```
 
 ### 4️⃣ Inicializar Prisma
