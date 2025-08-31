@@ -1,12 +1,11 @@
 import express from "express";
-import routes from "../routes/routes"; // caminho correto para seu arquivo
+import "dotenv/config";
+import routes from "../routes/routes";
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT;
 
 app.use(express.json());
-
-// Registrar rotas
 routes(app);
 
 app.listen(PORT, () => {

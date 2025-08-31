@@ -3,7 +3,7 @@ import CreateUserRequest from "../models/user/CreateUserRequest";
 import UpdatePasswordRequest from "../models/user/UpdatePasswordRequest";
 import UpdateUserNameRequest from "../models/user/UpdateUserNameRequest";
 
-class UserDao {
+export default class UserDao {
   async create(request: CreateUserRequest) {
     const user = await prisma.user.create({
       data: {
@@ -14,7 +14,7 @@ class UserDao {
     });
     return user;
   }
-  async findByEmail(email: string) {
+  async existsByEmail(email: string) {
     const user = await prisma.user.findUnique({
       where: { email },
       select: {
@@ -86,5 +86,3 @@ class UserDao {
     return user;
   }
 }
-
-export default UserDao;

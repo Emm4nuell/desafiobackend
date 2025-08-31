@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import CreateUserRequest from "../models/user/CreateUserRequest";
 import UpdateUserNameRequest from "../models/user/UpdateUserNameRequest";
 import UpdatePasswordRequest from "../models/user/UpdatePasswordRequest";
+import GlobalExcetion from "../exceptions/GlobalException";
 
 class UserService {
   private readonly userDao = new UserDao();
@@ -10,7 +11,7 @@ class UserService {
 
   public async create(request: CreateUserRequest) {
     try {
-      if (await this.userDao.findByEmail(request.email)) {
+      if (await this.userDao.existsByEmail(request.email)) {
         throw new Error("Email já cadastrado na base de dados");
       }
       const user = await this.userDao.create(
@@ -34,7 +35,9 @@ class UserService {
 
     const user = await this.userDao.findById(id);
     if (user == null) {
-      throw new Error("Usuário não localizado");
+      throw GlobalExcetion.nullPointerException(
+        "Usuário não localizado na base de dados."
+      );
     }
     return user;
   }
@@ -62,7 +65,9 @@ class UserService {
   public async updatePasswordUser(id: string, req: UpdatePasswordRequest) {
     const userId = await this.userDao.findById(id);
     if (userId === null) {
-      throw new Error("Usuário não localizado na base de dados.");
+      throw GlobalExcetion.nullPointerException(
+        "Usuário não localizado na base de dados."
+      );
     }
     const validation = await bcrypt.compare(req.password, userId?.password);
     if (validation) {

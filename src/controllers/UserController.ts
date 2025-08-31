@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import UserService from "../services/UserService";
 import UpdateUserNameRequest from "../models/user/UpdateUserNameRequest";
 import CreateUserRequest from "../models/user/CreateUserRequest";
@@ -12,13 +12,12 @@ class UserController {
     return res.sendStatus(201);
   }
 
-  async getUserId(req: Request, res: Response) {
+  async getUserId(req: Request, res: Response, next: NextFunction) {
     try {
       const user = await this.userservice.findById(req.params.id);
       return res.status(200).json(user);
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Erro interno do servidor" });
+      next(error);
     }
   }
 

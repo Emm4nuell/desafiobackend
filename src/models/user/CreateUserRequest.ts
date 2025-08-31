@@ -1,7 +1,7 @@
 import { Request } from "express";
 import z from "zod";
 
-class CreateUserRequest {
+export default class CreateUserRequest {
   private readonly _name: string;
   private readonly _email: string;
   private readonly _password: string;
@@ -35,5 +35,3 @@ class CreateUserRequest {
     return new CreateUserRequest(request.name, request.email, request.password);
   }
 }
-
-export default CreateUserRequest;
