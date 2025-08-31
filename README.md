@@ -47,7 +47,7 @@ npm install
 
 Dependências principais:
 ```bash
-npm install express bcrypt zod @prisma/client
+npm install express bcrypt zod @prisma/client @types/dotenv @types/jsonwebtoken
 ```
 
 Dependências de desenvolvimento:
@@ -58,6 +58,8 @@ npm install -D nodemon prisma typescript ts-node @types/express @types/bcrypt
 ### 3️⃣ Configurar variáveis de ambiente (`.env`)
 ```env
 DATABASE_URL="postgresql://postgres:administrador@localhost:5432/projetobackend"
+PORT="3000"
+SECRETE_KEY_TOKEN="123"
 ```
 
 ### 4️⃣ Inicializar Prisma
