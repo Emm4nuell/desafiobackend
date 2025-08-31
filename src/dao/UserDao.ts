@@ -4,6 +4,13 @@ import UpdatePasswordRequest from "../models/user/UpdatePasswordRequest";
 import UpdateUserNameRequest from "../models/user/UpdateUserNameRequest";
 
 export default class UserDao {
+  async findByEmail(email: string) {
+    const user = await prisma.user.findUnique({
+      where: { email: email },
+      select: { id: true, email: true, password: true },
+    });
+    return user;
+  }
   async create(request: CreateUserRequest) {
     const user = await prisma.user.create({
       data: {
@@ -21,7 +28,7 @@ export default class UserDao {
         name: true,
         email: true,
         id: true,
-        password: true,
+        password: false,
         createdAt: false,
         updatedAt: false,
       },
@@ -57,7 +64,7 @@ export default class UserDao {
         name: true,
         email: true,
         id: true,
-        password: true,
+        password: false,
         createdAt: false,
         updatedAt: false,
       },

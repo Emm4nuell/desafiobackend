@@ -24,4 +24,15 @@ export default class GlobalException extends FieldError {
   static notFound(message: string) {
     return new FieldError(404, "NotFound", message);
   }
+  static nullValue(message: string) {
+    return new FieldError(400, "Nullvalue", message);
+  }
+
+  static conflict(message: string) {
+    return new FieldError(409, "Conflict", message);
+  }
+
+  static passwordMismatch(message: string) {
+    return new FieldError(400, "PasswordMismatch", message);
+  }
 }

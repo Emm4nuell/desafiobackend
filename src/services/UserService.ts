@@ -4,21 +4,38 @@ import CreateUserRequest from "../models/user/CreateUserRequest";
 import UpdateUserNameRequest from "../models/user/UpdateUserNameRequest";
 import UpdatePasswordRequest from "../models/user/UpdatePasswordRequest";
 import GlobalExcetion from "../exceptions/GlobalException";
+import AuthUser from "../models/user/AuthUser";
+import TokenUtil from "../utils/TokenUtil";
 
-class UserService {
+export default class UserService {
   private readonly userDao = new UserDao();
-  private readonly saltRounds = 10;
+  private readonly generateToken = new TokenUtil();
+
+  public async auth(request: AuthUser) {
+    const user = await this.userDao.findByEmail(request.getEmail());
+    if (user == null) {
+      throw GlobalExcetion.notFound("Usuário não localizado na base de dados.");
+    }
+
+    const verify = await bcrypt.compare(request.getPassword(), user.password);
+
+    if (verify) {
+      const token = this.generateToken.generate(user.id, user.email);
+      return token;
+    }
+  }
 
   public async create(request: CreateUserRequest) {
+    const saltRounds = await bcrypt.genSalt(10);
     try {
       if (await this.userDao.existsByEmail(request.email)) {
-        throw new Error("Email já cadastrado na base de dados");
+        throw GlobalExcetion.conflict("Email já cadastrado na base de dados");
       }
       const user = await this.userDao.create(
         new CreateUserRequest(
           request.name,
           request.email,
-          await bcrypt.hash(request.password, this.saltRounds)
+          await bcrypt.hash(request.password, saltRounds)
         )
       );
       return user;
@@ -30,7 +47,7 @@ class UserService {
 
   public async findById(id: string) {
     if (id == null) {
-      throw new Error("O id não pode ser nulo");
+      throw GlobalExcetion.nullValue("O id não pode ser nulo");
     }
 
     const user = await this.userDao.findById(id);
@@ -39,7 +56,9 @@ class UserService {
         "Usuário não localizado na base de dados."
       );
     }
-    return user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...response } = user;
+    return response;
   }
 
   public async updateUserName(id: string, req: UpdateUserNameRequest) {
@@ -49,14 +68,15 @@ class UserService {
 
   public async deleteUser(id: string) {
     try {
-      console.log(`ID a ser deletado:: ${id}`);
       const user = await this.userDao.deleteUser(id);
       return user;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const err = error;
       if (err.code === "P2025") {
-        throw new Error("Usuário não localizado");
+        throw GlobalExcetion.nullPointerException(
+          "Usuário não localizado na base de dados."
+        );
       }
       throw new Error("Erro ao deletar usuário");
     }
@@ -74,8 +94,6 @@ class UserService {
       const user = await this.userDao.updatePassword(id, req);
       return user;
     }
-    throw new Error("Senhas não conferem.");
+    throw GlobalExcetion.unauthorized("Usuário ou senha inválido.");
   }
 }
-
-export default UserService;
