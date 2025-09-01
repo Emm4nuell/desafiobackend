@@ -96,4 +96,14 @@ export default class UserService {
     }
     throw GlobalExcetion.unauthorized("Usuário ou senha inválido.");
   }
+
+  public async findAll(
+    name: string,
+    email: string,
+    page: number,
+    limit: number
+  ) {
+    const users = await this.userDao.findAll(name, email, page, limit);
+    return users;
+  }
 }

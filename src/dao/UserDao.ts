@@ -4,6 +4,48 @@ import UpdatePasswordRequest from "../models/user/UpdatePasswordRequest";
 import UpdateUserNameRequest from "../models/user/UpdateUserNameRequest";
 
 export default class UserDao {
+  async findAll(
+    filtronome: string,
+    filtroemail: string,
+    page: number,
+    limit: number
+  ) {
+    console.log(
+      "filtronome: ",
+      filtronome,
+      "filtroemail: ",
+      filtroemail,
+      "page: ",
+      page,
+      "limit: ",
+      limit
+    );
+    const list = await prisma.user.findMany({
+      where: {
+        AND: [
+          filtronome
+            ? { name: { contains: filtronome, mode: "insensitive" } }
+            : {},
+          filtroemail
+            ? { email: { contains: filtroemail, mode: "insensitive" } }
+            : {},
+        ],
+      },
+      take: limit,
+      skip: (page - 1) * limit,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: {
+        name: "asc",
+      },
+    });
+    return list;
+  }
   async findByEmail(email: string) {
     const user = await prisma.user.findUnique({
       where: { email: email },

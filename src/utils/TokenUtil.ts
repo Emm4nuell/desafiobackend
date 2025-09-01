@@ -7,7 +7,7 @@ export default class TokenUtil {
     const token = jwt.sign(
       { id, email },
       process.env.SECRETE_KEY_TOKEN as string,
-      { expiresIn: "1m" }
+      { expiresIn: "10m" }
     );
     return token;
   }
